@@ -1,6 +1,7 @@
 from src.tiktokweb.tiktokweb_helper import(
-    split_processed_configs,
     split_processed_configs_tiktok_post,
+    extract_video_id,
+    deep_get,
 )
 from src.tiktokweb.set_proxy import(
     get_proxy,
@@ -16,6 +17,7 @@ __all__ = [
     "file_filter",
     "reset_proxy",
     "split_data_to_batches",
-    "split_processed_configs",
-    "split_processed_configs_tiktok_post"
+    "split_processed_configs_tiktok_post",
+    "extract_video_id",
+    "deep_get",
 ]

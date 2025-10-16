@@ -1,34 +1,15 @@
 import os
 import re
-from typing import List, Set, Tuple
-async def is_config_processed(product_id: str, processed_files: set) -> bool:
-    """
-    Kiểm tra xem product_id đã được cào (tồn tại file .json) hay chưa.
-    """
-    filename = f"{product_id}.json"
-    return filename in processed_files
+from typing import List, Set, Tuple, Optional
 
-
-async def split_processed_configs(product_ids: list[str], raw_data_path: str):
-    """
-    Chia product_ids thành 2 list:
-      - processed: đã có file .json trong raw_data_path
-      - unprocessed: chưa có file .json
-    """
-    processed_files = set(os.listdir(raw_data_path))
-    processed, unprocessed = [], []
-
-    for pid in product_ids:
-        if await is_config_processed(pid, processed_files):
-            processed.append(pid)
-        else:
-            unprocessed.append(pid)
-
-    return processed, unprocessed
+def extract_video_id(url: str) -> Optional[str]:
+    """Extract video ID from TikTok URL"""
+    match = re.search(r"/(\d+)$", url)
+    return match.group(1) if match else None
 
 
 
-async def is_config_processed_tiktok_post(product_url: str, processed_files: Set[str]) -> bool:
+def is_config_processed_tiktok_post(product_url: str, processed_files: Set[str]) -> bool:
     """
     Kiểm tra xem product_url đã được cào (tồn tại file .json) hay chưa.
     Ví dụ:
@@ -43,7 +24,7 @@ async def is_config_processed_tiktok_post(product_url: str, processed_files: Set
     filename = f"{video_id}.json"
     return filename in processed_files
 
-async def split_processed_configs_tiktok_post(product_urls: List[str], raw_data_path: str) -> Tuple[List[str], List[str]]:
+def split_processed_configs_tiktok_post(product_urls: List[str], raw_data_path: str) -> Tuple[List[str], List[str]]:
     """
     Chia product_urls thành 2 list:
       - processed: đã có file .json trong raw_data_path
@@ -53,9 +34,19 @@ async def split_processed_configs_tiktok_post(product_urls: List[str], raw_data_
     processed, unprocessed = [], []
 
     for url in product_urls:
-        if await is_config_processed_tiktok_post(url, processed_files):
+        if is_config_processed_tiktok_post(url, processed_files):
             processed.append(url)
         else:
             unprocessed.append(url)
 
     return processed, unprocessed
+
+
+def deep_get(d, path: list, default=None):
+    """Truy cập an toàn vào dict lồng nhau."""
+    for key in path:
+        if isinstance(d, dict):
+            d = d.get(key, default)
+        else:
+            return default
+    return d

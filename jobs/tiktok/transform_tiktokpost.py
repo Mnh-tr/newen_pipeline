@@ -11,19 +11,17 @@ import json
 from datetime import datetime, date
 import asyncio
 from typing import Any, Dict, List, Optional, Sequence, Union
-from fake_http_header import FakeHttpHeader
+
 # from configs.constant import KEYWORDS_BNBG
 
 from loguru import logger
 import pathlib
 import polars as pl
-import random
 import traceback
 import httpx
 from src.tiktokweb import(
     get_proxy,
     reset_proxy,
-    split_processed_configs,
     split_processed_configs_tiktok_post
 )
 from utils.helper import (
@@ -41,16 +39,15 @@ from utils import (
 from urllib.parse import urlparse, parse_qs, unquote, quote
 import re
 import csv
-from bs4 import BeautifulSoup
 log_time = datetime.today().strftime("%Y-%m-%dT%H-%M-%S%z")
 PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
 TODAY = date.today().strftime("%Y-%m-%d")
+# TODAY = "2025-10-13"
 
 RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html"
-PRODUCT_IDS = read_file("configs/product_id_tiktok_video.yaml", FileFormat.YAML)
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video"
-
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data"
+CONFIG_DATA_PATH= f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/config_tiktokweb.txt"
 PATH_TRANSFORM_DATA = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/transform_data"
 
 
@@ -150,7 +147,7 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
         result = {
             "period_web": get_monday_of_week().strftime("%Y-%m-%d"),
             "share_url": data_raw.get("share_url"),
-            "aweme_id": config_data.get("aweme_id", aweme_id),
+            "aweme_id": config_data.get("aweme_id"),
             "job_date": config_data.get("job_date"),
             "period": config_data.get("period"),
             "region": config_data.get("region"),
@@ -213,10 +210,10 @@ def load_tiktok_config(config_path: str) -> Dict[str, Dict[str, str]]:
 
 
 
-def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH_TRANSFORM_DATA) -> List[dict]:
+def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH_TRANSFORM_DATA, config_dict = CONFIG_DATA_PATH) -> List[dict]:
     all_data = []
     list_files = os.listdir(path_data_raw)
-    config_dict=load_tiktok_config("tiktok_config.txt")
+    config_data = load_tiktok_config(config_dict)
     json_files = [f for f in list_files if f.endswith(".json")]
     print(f"Found {len(list_files)} JSON files to process.")
     for file_name in json_files:
@@ -226,7 +223,7 @@ def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH
             if not data_raw:
                 logger.bind(save=True).warning(f"File {file_name} rỗng hoặc không đọc được.")
                 continue
-            transformed = transform_item_data(data_raw, config_dict)
+            transformed = transform_item_data(data_raw, config_data)
             save_file(
                 transformed, 
                 os.path.join(path_transform_data, f"{file_name}"), 
@@ -290,9 +287,6 @@ def main():
         ("stats_repostCount", pl.Utf8),
     ]
 
-    save_file(
-        full_data,"./full.json", FileFormat.JSON
-    )
     logger.bind(save=True).info("START: UPLOAD TIKTOK WEB DATA")
     # upload bigquery
     gbg = GCBigquery()
