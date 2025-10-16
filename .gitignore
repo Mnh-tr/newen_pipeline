@@ -15,6 +15,7 @@ airflow/logs/*
 *.csv
 *.html
 *.txt
+!requirements.txt
 *.log
 *.ipynb
 *.yaml
