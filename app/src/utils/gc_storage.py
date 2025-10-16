@@ -1,4 +1,12 @@
 from __future__ import annotations
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(os.path.dirname(current_dir))
+project_dir = os.path.dirname(current_dir)
+sys.path.append(project_dir)
+os.chdir(project_dir)
 
 import datetime as dt
 import io
@@ -14,7 +22,7 @@ from google.cloud.exceptions import Conflict, ServerError
 from google.cloud.storage import transfer_manager
 
 # from loguru import logger
-from utils import read_file, FileFormat
+from src.utils.helper import read_file, FileFormat
 
 STORAGE_CLASSES = ("STANDARD", "NEARLINE", "COLDLINE", "ARCHIVE")
 

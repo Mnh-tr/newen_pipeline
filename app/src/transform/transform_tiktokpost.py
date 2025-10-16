@@ -1,30 +1,20 @@
 import sys
 import os
-current_dir = os.getcwd()
-if "newen_pipeline" in current_dir:
-    parts = current_dir.split("newen_pipeline")
-    root_path = parts[0] + "newen_pipeline"
-    new_path = os.path.join(root_path)
-    sys.path.insert(0, new_path)
-    os.chdir(new_path)
-import json
-from datetime import datetime, date
-import asyncio
-from typing import Any, Dict, List, Optional, Sequence, Union
 
-# from configs.constant import KEYWORDS_BNBG
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
 
-from loguru import logger
+import csv
 import pathlib
 import polars as pl
 import traceback
-import httpx
-from src.tiktokweb import(
-    get_proxy,
-    reset_proxy,
-    split_processed_configs_tiktok_post
-)
-from utils.helper import (
+from datetime import datetime, date
+from typing import Dict, List, Optional
+from loguru import logger
+
+from src.utils.helper import (
     FileFormat,
     read_file,
     save_file,
@@ -32,13 +22,9 @@ from utils.helper import (
     file_filter,
     
 )
-from utils import (
-    GCStorage,
-    GCBigquery
-)
-from urllib.parse import urlparse, parse_qs, unquote, quote
-import re
-import csv
+from src.utils.gc_storage import GCStorage
+from src.utils.gc_bigquery import GCBigquery
+
 log_time = datetime.today().strftime("%Y-%m-%dT%H-%M-%S%z")
 PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
 TODAY = date.today().strftime("%Y-%m-%d")
@@ -289,31 +275,30 @@ def main():
 
     logger.bind(save=True).info("START: UPLOAD TIKTOK WEB DATA")
     # upload bigquery
-    gbg = GCBigquery()
-    try:
-        df = pl.DataFrame(full_data, schema=schema, strict=False)
-        # ép kiểu sau khi tạo df
-        df = df.with_columns([
-            pl.col("job_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
-            pl.col("first_seen_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
-            pl.col("create_time").str.strptime(pl.Datetime, format="%Y-%m-%dT%H:%M:%S%.f", strict=False),
-        ])
-        df_no_duplicates = df.unique()
-        logger.bind(save=True).debug(f"Products to upload: {len(df_no_duplicates)} (dedup from {len(df)})")
-        # comment đoạn này để test.
-        gbg.upload_dataframe(
-            df=df_no_duplicates,
-            project="newen-455007",
-            destination="tiktok_search_keyword_re_scrape_test.20251013",
-            format="parquet",
-            mode="append",
-            use_legacy=True
-        )
-        logger.bind(save=True).success("Upload BigQuery Success")
-    except Exception as e:
-        logger.bind(save=True).error(f"BigQuery upload failed: {e}")
-        logger.debug(traceback.format_exc())
-
+    # gbg = GCBigquery()
+    # try:
+    #     df = pl.DataFrame(full_data, schema=schema, strict=False)
+    #     # ép kiểu sau khi tạo df
+    #     df = df.with_columns([
+    #         pl.col("job_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
+    #         pl.col("first_seen_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
+    #         pl.col("create_time").str.strptime(pl.Datetime, format="%Y-%m-%dT%H:%M:%S%.f", strict=False),
+    #     ])
+    #     df_no_duplicates = df.unique()
+    #     logger.bind(save=True).debug(f"Products to upload: {len(df_no_duplicates)} (dedup from {len(df)})")
+    #     # comment đoạn này để test.
+    #     gbg.upload_dataframe(
+    #         df=df_no_duplicates,
+    #         project="newen-455007",
+    #         destination=f"tiktok_search_keyword_re_scrape_test.{PARTITION_DATE}",
+    #         format="parquet",
+    #         mode="append",
+    #         use_legacy=True
+    #     )
+    #     logger.bind(save=True).success("Upload BigQuery Success")
+    # except Exception as e:
+    #     logger.bind(save=True).error(f"BigQuery upload failed: {e}")
+    #     logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":

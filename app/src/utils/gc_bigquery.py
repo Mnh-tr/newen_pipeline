@@ -1,11 +1,18 @@
 from __future__ import annotations
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
 
 import io
 import pathlib
 import polars as pl
 
 from google.cloud import bigquery
-from utils import read_file, FileFormat
+from src.utils.helper import read_file, FileFormat
 from loguru import logger
 from google.auth import exceptions
 

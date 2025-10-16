@@ -7,6 +7,8 @@ wheels/
 *.egg-info
 data_tiktok_video/*
 
+airflow/logs/*
+*.env
 # Virtual environments
 .venv
 *.json
