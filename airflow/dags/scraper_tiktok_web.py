@@ -10,7 +10,7 @@ AIRFLOW_STMP_TO_ADDRESS = "test@abc.com"
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime.datetime(2025, 10, 16, 15, 5, tzinfo=local_tz),
+    "start_date": datetime.datetime(2025, 10, 17, 7, 0, tzinfo=local_tz),
     "retries": 2,
     "retry_delay": datetime.timedelta(minutes=3),
     "email": AIRFLOW_STMP_TO_ADDRESS,
@@ -21,7 +21,7 @@ default_args = {
 with DAG(
     "sraper_tiktok_web",
     default_args=default_args,
-    schedule="*/5 * * * *",
+    schedule="0 7 * * *",
     catchup=False,
 ) as dag:
     start=EmptyOperator(task_id="start")
