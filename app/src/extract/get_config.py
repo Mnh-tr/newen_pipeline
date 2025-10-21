@@ -21,7 +21,7 @@ PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
 TODAY = date.today().strftime("%Y-%m-%d")
 PATH_CONFIG = f"./configs/tiktok/{PARTITION_DATE}/{TODAY}"
 
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/get_config"
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/get_config/{TODAY}"
 def init_dir():
     pathlib.Path(PATH_CONFIG).mkdir(parents=True, exist_ok=True)
     pathlib.Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
@@ -59,7 +59,7 @@ def fetch_tiktok_config(config_path: str) -> bool:
             logger.bind(save=True).warning("No data returned from query")
             return False
         
-        output_path = os.path.join(config_path, "config_tiktokweb.txt")
+        output_path = os.path.join(config_path, "config_tiktokweb.tsv")
         pdf.write_csv(output_path, separator="\t")
         
         logger.bind(save=True).info(f"Saved {len(pdf)} rows to {output_path}")
@@ -75,7 +75,7 @@ def extract_urls_to_yaml(config_path: str) -> bool:
     try:
         logger.bind(save=True).info("Extracting share_urls to YAML...")
         
-        input_path = os.path.join(config_path, "config_tiktokweb.txt")
+        input_path = os.path.join(config_path, "config_tiktokweb.tsv")
         
         if not os.path.exists(input_path):
             logger.bind(save=True).error(f"File not found: {input_path}")
@@ -109,4 +109,5 @@ def main(config_path: str) -> bool:
 
 
 if __name__ == "__main__":
-    main(PATH_CONFIG)
+    success = main(PATH_CONFIG)
+    sys.exit(0 if success else 1)

@@ -48,7 +48,7 @@ RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html/video"
 CONFIGS_LINK = read_file(f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/tiktok_share_urls.yaml", FileFormat.YAML)
 REQUEST_URL = read_file("./configs/link_request_tiktok_photo.txt", FileFormat.TXT)
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/scraper_tiktokweb"
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/scraper_tiktokweb/{TODAY}"
 def init_dir():
     pathlib.Path(RAW_DATA_PATH).mkdir(parents=True, exist_ok=True)
     pathlib.Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
@@ -382,6 +382,7 @@ async def main(link_configs = CONFIGS_LINK, max_attempts=20):
 
     if unprocessed_configs:
         logger.error(f"Some configs could not be processed after {max_attempts} attempts: {unprocessed_configs}")
+        raise RuntimeError(f"{len(unprocessed_configs)} configs remain unprocessed.")
     else:
         logger.bind(save=True).success("ALL CONFIGS PROCESSED - scraping finished")
 
