@@ -94,7 +94,7 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
         createTime = data.get("createTime")
         desc = data.get("desc")
         
-        # lấy thông tin video
+                # lấy thông tin video
         video = data.get("video", {}) or {} 
         video_cover = video.get("cover")
         video_originCover = video.get("originCover")
@@ -105,11 +105,17 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
         author_id = author.get("id")
         author_uniqueId = author.get("uniqueId")
         author_nickname = author.get("nickname")
+        author_verified = author.get("verified")
 
         # --- AuthorStats info ---
         author_stats = data.get("authorStatsV2", {}) or {}
         author_followerCount = author_stats.get("followerCount")
         author_followingCount = author_stats.get("followingCount")
+        author_heart = author_stats.get("heart")
+        author_heartCount = author_stats.get("heartCount")
+        author_videoCount = author_stats.get("videoCount")
+        author_diggCount = author_stats.get("diggCount")
+        author_friendCount = author_stats.get("friendCount")
 
         # --- Music info ---
         music = data.get("music", {}) or {}
@@ -148,10 +154,16 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
             "video_cover": video_cover,
             "video_originCover": video_originCover,
             "author_id": author_id,
+            "author_verified": author_verified,
             "author_uniqueId": author_uniqueId,
             "author_nickname": author_nickname,
             "author_followerCount": author_followerCount,
             "author_followingCount": author_followingCount,
+            "author_heart": author_heart,
+            "author_heartCount": author_heartCount,
+            "author_videoCount": author_videoCount,
+            "author_diggCount": author_diggCount,
+            "author_friendCount": author_friendCount,
             "music_id": music_id,
             "music_title": music_title,
             "music_playUrl": music_playUrl,
@@ -162,7 +174,6 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
             "stats_playCount": stats_playCount,
             "stats_collectCount": stats_collectCount,
             "stats_repostCount": stats_repostCount,
-
         }
 
         return result

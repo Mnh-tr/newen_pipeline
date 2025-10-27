@@ -70,13 +70,13 @@ import asyncio
 from loguru import logger
 
 # API reset IP
-RESET_URL = ["https://api.zingproxy.com/getip/409a94e5d09508af6867f08a462d1a314f2b210a"
+RESET_URL = ["https://api.zingproxy.com/getip/f768de4ff0559cb15c77e270061bba76af4bf9d1"
 
 ]
 
 # Proxy list (có thể đưa ra file .yaml nếu nhiều)
 PROXIES = [
-    "139.99.36.55:8451:ZsiOashcstyle:ZYFBxLgu"
+    "103.207.36.217:8039:pIVxYmgTstyle:DzAFKtyz"
 ]
 
 def build_proxy_url(raw_proxy: str) -> str:
