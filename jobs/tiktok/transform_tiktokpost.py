@@ -47,7 +47,7 @@ TODAY = date.today().strftime("%Y-%m-%d")
 RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html"
 LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data"
-CONFIG_DATA_PATH= f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/config_tiktokweb.txt"
+CONFIG_DATA_PATH= f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/config_tiktokweb.tsv"
 PATH_TRANSFORM_DATA = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/transform_data"
 
 
@@ -304,7 +304,7 @@ def main():
         gbg.upload_dataframe(
             df=df_no_duplicates,
             project="newen-455007",
-            destination="tiktok_search_keyword_re_scrape_test.20251013",
+            destination="tiktok_search_keyword_re_scrape_test.20251020",
             format="parquet",
             mode="append",
             use_legacy=True

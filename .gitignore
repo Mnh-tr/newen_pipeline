@@ -16,3 +16,4 @@ data_tiktok_video/*
 *.log
 *.ipynb
 *.yaml
+*.tsv
