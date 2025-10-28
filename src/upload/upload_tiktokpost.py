@@ -118,10 +118,16 @@ def main():
 
             # --- Author Info ---
             ("author_id", pl.Utf8),
+            ("author_verified", pl.Utf8),
             ("author_uniqueId", pl.Utf8),
             ("author_nickname", pl.Utf8),
             ("author_followerCount", pl.Utf8),     # hiện vẫn là string trong dữ liệu
             ("author_followingCount", pl.Utf8),
+            ("author_heart", pl.Utf8),
+            ("author_heartCount", pl.Utf8),
+            ("author_videoCount", pl.Utf8),
+            ("author_diggCount", pl.Utf8),
+            ("author_friendCount", pl.Utf8),
 
             # --- Music Info ---
             ("music_id", pl.Utf8),
