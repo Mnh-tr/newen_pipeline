@@ -342,13 +342,13 @@ def open_tiktok_with_retry():
             attempt += 1
             logger.info(f"\n{'='*50}\nLần thử #{attempt}\n{'='*50}")
             # 103.207.36.217:8039:pIVxYmgTstyle:DzAFKtyz
-            browser = p.firefox.launch(
+            browser = p.chromium.launch(
                 headless=False,
-                # proxy={
-                #     "server": "http://103.207.36.217:8039",        # hoặc "socks5://ip:port"
-                #     "username": "pIVxYmgTstyle",                # nếu có
-                #     "password": "DzAFKtyz",                # nếu có
-                # },
+                proxy={
+                    "server": "http://103.207.36.217:8039",        # hoặc "socks5://ip:port"
+                    "username": "pIVxYmgTstyle",                # nếu có
+                    "password": "DzAFKtyz",                # nếu có
+                },
                 args=[
                     "--disable-blink-features=AutomationControlled",
                     "--disable-dev-shm-usage",
@@ -366,7 +366,7 @@ def open_tiktok_with_retry():
                 logger.info("Đang truy cập TikTok...")
                 page.goto("https://www.tiktok.com/@wondermama_94/video/7562021847189998879", wait_until="domcontentloaded", timeout=30000)
                 wait_for_page_ready(page)
-
+                time.sleep(20)
                 if check_captcha(page):
                     logger.warning("Gặp captcha, đóng browser và thử lại...")
                     browser.close()
