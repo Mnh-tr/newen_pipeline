@@ -17,7 +17,8 @@ from src.utils.solve_captchas import get_similar_objects_positions
 from src.utils.set_proxy import get_proxy, reset_proxy
 import time
 import requests
-
+import yaml
+CONFIG_PATH = "./configs/secrets.yaml"
 @dataclass
 class ProxyConfig:
     """Cấu hình proxy - sẵn sàng cho tương lai"""
@@ -674,8 +675,16 @@ class TikTokAutomation:
             if browser and browser.is_connected():
                 browser.close()
 
+def load_proxy_config():
+    """Đọc toàn bộ cấu hình YAML"""
+    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    return config
+
+
 def main():
     """Hàm main"""
+    config = load_proxy_config()
     # Cấu hình loguru
     logger.add(
         "tiktok_automation.log",
@@ -689,16 +698,18 @@ def main():
     TARGET_URL = "https://www.tiktok.com/@missnatalie9791/video/7565661044358663454"
     
     credentials = LoginCredentials(
-        username="user4499981277330",
-        password="367K#26N"
+        username=config["account"]["username"],
+        password=config["account"]["password"]
     )
     
+    
     # Cấu hình proxy (có thể None để không dùng proxy)
+    proxy_cfg = config["proxy_newen"]
     proxy_config = ProxyConfig(
-        server="103.207.36.217:8039",
-        username="pIVxYmgTstyle",
-        password="DzAFKtyz",
-        link_request_proxy="https://api.zingproxy.com/getip/f768de4ff0559cb15c77e270061bba76af4bf9d1"
+        server=proxy_cfg["server"],
+        username=proxy_cfg["username"],
+        password=proxy_cfg["password"],
+        link_request_proxy=proxy_cfg["link_request_proxy"]
     )
     
     # Hoặc không dùng proxy:
