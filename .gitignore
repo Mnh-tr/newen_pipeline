@@ -20,3 +20,6 @@ airflow/logs/*
 *.log
 *.yaml
 *.tsv
+*.ipynb
+*.png
+*.webp
