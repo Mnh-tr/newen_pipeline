@@ -1,32 +1,33 @@
 import sys
 import os
-current_dir = os.getcwd()
-if "newen_pipeline" in current_dir:
-    parts = current_dir.split("newen_pipeline")
-    root_path = parts[0] + "newen_pipeline"
-    new_path = os.path.join(root_path)
-    sys.path.insert(0, new_path)
-    os.chdir(new_path)
-import json
-from datetime import datetime, date
-import asyncio
-from typing import Any, Dict, List, Optional, Sequence, Union
-from fake_http_header import FakeHttpHeader
-# from configs.constant import KEYWORDS_BNBG
 
-from loguru import logger
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
+
+import re
+import json
+import asyncio
 import pathlib
 import random
 import traceback
 import httpx
-from src.tiktokweb import(
-    get_proxy,
-    reset_proxy,
+import urllib.parse
+
+from bs4 import BeautifulSoup
+from typing import Any, Dict, Optional
+from fake_http_header import FakeHttpHeader
+from datetime import datetime, date
+from loguru import logger
+
+from src.utils.set_proxy import get_proxy, reset_proxy
+from src.extract.tiktokweb_helper import(
     split_processed_configs_tiktok_post,
     extract_video_id,
     deep_get,
 )
-from utils.helper import (
+from src.utils.helper import (
     FileFormat,
     read_file,
     save_file,
@@ -34,13 +35,10 @@ from utils.helper import (
     file_filter,
     
 )
-from src.tiktokweb.xbogus_pure_py import encrypt as sign_bogus
-from src.tiktokweb.xgnarly_pure_py import encrypt as sign_gnarly
+from src.extract.xbogus_pure_py import encrypt as sign_bogus
+from src.extract.xgnarly_pure_py import encrypt as sign_gnarly
 from urllib.parse import urlparse, parse_qs, unquote, quote
-import re
 
-from bs4 import BeautifulSoup
-import urllib.parse
 
 # ---------------------- GLOBAL CONFIG ----------------------
 log_time = datetime.today().strftime("%Y-%m-%dT%H-%M-%S%z")
@@ -48,9 +46,9 @@ PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
 TODAY = date.today().strftime("%Y-%m-%d")
 RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html/video"
-CONFIGS_LINK = read_file(f"configs/tiktok/{PARTITION_DATE}/{TODAY}/tiktok_share_urls.yaml", FileFormat.YAML)
-REQUEST_URL = read_file("configs/link_request_tiktok_photo.txt", FileFormat.TXT)
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/scraper_tiktokweb"
+CONFIGS_LINK = read_file(f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/tiktok_share_urls.yaml", FileFormat.YAML)
+REQUEST_URL = read_file("./configs/link_request_tiktok_photo.txt", FileFormat.TXT)
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/scraper_tiktokweb/{TODAY}"
 def init_dir():
     pathlib.Path(RAW_DATA_PATH).mkdir(parents=True, exist_ok=True)
     pathlib.Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
@@ -384,6 +382,7 @@ async def main(link_configs = CONFIGS_LINK, max_attempts=20):
 
     if unprocessed_configs:
         logger.error(f"Some configs could not be processed after {max_attempts} attempts: {unprocessed_configs}")
+        raise RuntimeError(f"{len(unprocessed_configs)} configs remain unprocessed.")
     else:
         logger.bind(save=True).success("ALL CONFIGS PROCESSED - scraping finished")
 

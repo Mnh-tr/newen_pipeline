@@ -1,30 +1,20 @@
 import sys
 import os
-current_dir = os.getcwd()
-if "newen_pipeline" in current_dir:
-    parts = current_dir.split("newen_pipeline")
-    root_path = parts[0] + "newen_pipeline"
-    new_path = os.path.join(root_path)
-    sys.path.insert(0, new_path)
-    os.chdir(new_path)
-import json
-from datetime import datetime, date
-import asyncio
-from typing import Any, Dict, List, Optional, Sequence, Union
 
-# from configs.constant import KEYWORDS_BNBG
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
 
-from loguru import logger
+import csv
 import pathlib
 import polars as pl
 import traceback
-import httpx
-from src.tiktokweb import(
-    get_proxy,
-    reset_proxy,
-    split_processed_configs_tiktok_post
-)
-from utils.helper import (
+from datetime import datetime, date
+from typing import Dict, List, Optional
+from loguru import logger
+
+from src.utils.helper import (
     FileFormat,
     read_file,
     save_file,
@@ -32,21 +22,22 @@ from utils.helper import (
     file_filter,
     
 )
-from utils import (
-    GCStorage,
-    GCBigquery
-)
-from urllib.parse import urlparse, parse_qs, unquote, quote
-import re
-import csv
+from src.utils.gc_storage import GCStorage
+from src.utils.gc_bigquery import GCBigquery
+
 log_time = datetime.today().strftime("%Y-%m-%dT%H-%M-%S%z")
 PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
+TABLE_DATE = get_monday_of_week().strftime("%Y%m%d")
 TODAY = date.today().strftime("%Y-%m-%d")
 # TODAY = "2025-10-13"
 
 RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html"
+<<<<<<< HEAD:jobs/tiktok/transform_tiktokpost.py
 LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data"
+=======
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data/{TODAY}"
+>>>>>>> automate-with-task-scheduler:src/transform/transform_tiktokpost.py
 CONFIG_DATA_PATH= f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/config_tiktokweb.tsv"
 PATH_TRANSFORM_DATA = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/transform_data"
 
@@ -107,7 +98,7 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
         createTime = data.get("createTime")
         desc = data.get("desc")
         
-        # lấy thông tin video
+                # lấy thông tin video
         video = data.get("video", {}) or {} 
         video_cover = video.get("cover")
         video_originCover = video.get("originCover")
@@ -118,11 +109,17 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
         author_id = author.get("id")
         author_uniqueId = author.get("uniqueId")
         author_nickname = author.get("nickname")
+        author_verified = author.get("verified")
 
         # --- AuthorStats info ---
         author_stats = data.get("authorStatsV2", {}) or {}
         author_followerCount = author_stats.get("followerCount")
         author_followingCount = author_stats.get("followingCount")
+        author_heart = author_stats.get("heart")
+        author_heartCount = author_stats.get("heartCount")
+        author_videoCount = author_stats.get("videoCount")
+        author_diggCount = author_stats.get("diggCount")
+        author_friendCount = author_stats.get("friendCount")
 
         # --- Music info ---
         music = data.get("music", {}) or {}
@@ -161,10 +158,16 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
             "video_cover": video_cover,
             "video_originCover": video_originCover,
             "author_id": author_id,
+            "author_verified": author_verified,
             "author_uniqueId": author_uniqueId,
             "author_nickname": author_nickname,
             "author_followerCount": author_followerCount,
             "author_followingCount": author_followingCount,
+            "author_heart": author_heart,
+            "author_heartCount": author_heartCount,
+            "author_videoCount": author_videoCount,
+            "author_diggCount": author_diggCount,
+            "author_friendCount": author_friendCount,
             "music_id": music_id,
             "music_title": music_title,
             "music_playUrl": music_playUrl,
@@ -175,14 +178,12 @@ def transform_item_data(data_raw: dict,  config_dict: Optional[dict] = None) -> 
             "stats_playCount": stats_playCount,
             "stats_collectCount": stats_collectCount,
             "stats_repostCount": stats_repostCount,
-
         }
 
         return result
     except Exception as e:
         print(f"Lỗi transform_item_data: {e}")
         return {}
-
 
 
 def load_tiktok_config(config_path: str) -> Dict[str, Dict[str, str]]:
@@ -207,7 +208,6 @@ def load_tiktok_config(config_path: str) -> Dict[str, Dict[str, str]]:
                     "aweme_id": row.get("aweme_id"),
                 }
     return config_dict
-
 
 
 def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH_TRANSFORM_DATA, config_dict = CONFIG_DATA_PATH) -> List[dict]:
@@ -237,6 +237,7 @@ def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH
             logger.bind(save=True).error(f"Lỗi xử lý file {file_name}: {e}")
     return all_data
 
+<<<<<<< HEAD:jobs/tiktok/transform_tiktokpost.py
 def main():
     # transform data
     print(TODAY)
@@ -315,10 +316,12 @@ def main():
         logger.debug(traceback.format_exc())
 
 
+=======
+>>>>>>> automate-with-task-scheduler:src/transform/transform_tiktokpost.py
 
 if __name__ == "__main__":
     try:
-        main()
+        transform_all_data()
     except Exception:
         logger.debug(traceback.format_exc())
         raise

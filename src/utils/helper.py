@@ -1,17 +1,22 @@
 from __future__ import annotations
 import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
+
 import time
-from datetime import datetime, timedelta
-import json
-import os
 import re
+import json
 import shutil
-import traceback
+import requests
+import yaml
+import pandas as pd
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
-import requests
-import pandas as pd
-import yaml
 from loguru import logger
 MAX_SIZE_OF_FILE = 100 * 1024 * 1024  # 100
 

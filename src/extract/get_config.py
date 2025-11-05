@@ -1,61 +1,33 @@
 import sys
 import os
-current_dir = os.getcwd()
-if "newen_pipeline" in current_dir:
-    parts = current_dir.split("newen_pipeline")
-    root_path = parts[0] + "newen_pipeline"
-    new_path = os.path.join(root_path)
-    sys.path.insert(0, new_path)
-    os.chdir(new_path)
-import json
-from datetime import datetime, date
-import asyncio
-from typing import Any, Dict, List, Optional, Sequence, Union
-# from configs.constant import KEYWORDS_BNBG
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(project_dir)
+os.chdir(project_dir)
+
+import yaml
+import pathlib
+import polars as pl
 
 from loguru import logger
-import pathlib
-import random
-import traceback
-import polars as pl
-from src.tiktokweb import(
-    get_proxy,
-    reset_proxy,
-    split_processed_configs_tiktok_post
-)
-from utils.helper import (
-    FileFormat,
-    read_file,
-    save_file,
-    get_monday_of_week,
-    file_filter,
-    
-)
-import yaml
-from src.tiktokweb.xbogus_pure_py import encrypt as sign_bogus
-from src.tiktokweb.xgnarly_pure_py import encrypt as sign_gnarly
-from urllib.parse import urlparse, parse_qs, unquote, quote
-import re
-import urllib.parse
-from utils import (
-    GCStorage,
-    GCBigquery
-)
+from datetime import datetime, date
+
+from src.utils.helper import get_monday_of_week, file_filter
+from src.utils.gc_bigquery import GCBigquery
+
 log_time = datetime.today().strftime("%Y-%m-%dT%H-%M-%S%z")
 PARTITION_DATE = get_monday_of_week().strftime("%Y-%m-%d")
 TODAY = date.today().strftime("%Y-%m-%d")
 PATH_CONFIG = f"./configs/tiktok/{PARTITION_DATE}/{TODAY}"
 
-
-
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/get_config"
+LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/get_config/{TODAY}"
 def init_dir():
     pathlib.Path(PATH_CONFIG).mkdir(parents=True, exist_ok=True)
     pathlib.Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
 
 
 init_dir()
-import time
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
@@ -137,4 +109,5 @@ def main(config_path: str) -> bool:
 
 
 if __name__ == "__main__":
-    main(PATH_CONFIG)
+    success = main(PATH_CONFIG)
+    sys.exit(0 if success else 1)

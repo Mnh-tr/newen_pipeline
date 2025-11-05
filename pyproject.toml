@@ -3,7 +3,7 @@ name = "newen-pipeline"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "aiohappyeyeballs==2.6.1",
     "aiohttp==3.12.15",
@@ -124,4 +124,5 @@ dependencies = [
     "win32-setctime==1.2.0",
     "wsproto==1.2.0",
     "yarl==1.20.1",
+    "nbconvert"
 ]
