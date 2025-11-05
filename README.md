@@ -1,6 +1,6 @@
-# newen-pipeline
+# Newen Rescrape Pipeline
 
-A small pipeline for extracting and transforming TikTok API data and uploading to Google Cloud Bigquery.
+A lightweight pipeline for extracting and transforming TikTok API data and uploading to Google Cloud Bigquery.
 
 ## Repository layout
 
@@ -24,9 +24,18 @@ project_root
 └─ README.md
 ```
 
+## Overview
+
+The pipeline consists of four main stages:
+
+1. **Extract** — Fetch TikTok data via API using configured proxies and accounts.
+2. **Transform** — Clean, normalize, and enrich raw data.
+3. **Upload** — Push processed data to Google Cloud BigQuery.
+4. **Orchestrate** — Automate the workflow using Windows Task Scheduler.
+
 ## Prerequisites
 
-- **Python**: 3.12 (pyproject requires >=3.12,<3.13)
+- **Python**: 3.12 (required: >=3.12,<3.13)
 - **[uv](https://docs.astral.sh/uv/getting-started/installation)**: Python package management tool.
 - **Windows Task Scheduler**
 
@@ -68,19 +77,19 @@ If you plan to upload to GCS or BigQuery, point [configs/gcp.yaml](configs/gcp.y
 
 ## Execution steps
 
-You can run each step manually, by using:
+You can run each stage manually:
+### 1. Extract
 ```bash
 uv run python src/extract/get_config.py
-```
-
-```bash
 uv run python src/extract/scraper_tiktokweb_post.py
 ```
 
+### 2. Transform
 ```bash
 uv run python src/transform/transform_tiktokpost.py
 ```
 
+### 3. Upload
 ```bash
 uv run python src/upload/upload_tiktokpost.py
 ```
@@ -88,14 +97,23 @@ uv run python src/upload/upload_tiktokpost.py
 Or, you can set it to run automatically everyday by setting up **Task Scheduler**
 
 ## Scheduling
+Firstly, in the [run_automate_pipeline.bat](src/orchestrate/run_automate_pipeline.bat), modify the path of Python execution environment and the path of the [automate_pipeline.py](src/orchestrate/automate_pipeline.py).
+
 - Open **Task Scheduler**
+<img width="1931" height="1019" alt="Screenshot (209)" src="https://github.com/user-attachments/assets/5fb5fb1f-917d-4b02-a440-db8ece4728ab" />
 
 - Start to creating a task
+<img width="1931" height="1019" alt="Screenshot (209)" src="https://github.com/user-attachments/assets/bff1fc54-0ef0-4f4c-a1b9-6170ea5eefb1" />
 
 - **General tab**: fill in the information and choose `Run whether user is logged on or not`
+<img width="1930" height="1014" alt="image" src="https://github.com/user-attachments/assets/48234b8e-f435-43f8-bcef-36f815a09c6b" />
 
 - **Triggers tab**: create a scheduler
+<img width="1927" height="1005" alt="image" src="https://github.com/user-attachments/assets/eb2d294c-0628-4bf3-ae39-a81d7731a417" />
+<img width="1923" height="1017" alt="Screenshot (212)" src="https://github.com/user-attachments/assets/12f6cb91-9363-4b94-906b-a4c128d284c1" />
 
 - **Actions tab**: browse to the `run_automate_pipeline.bat` in the project
+<img width="1913" height="1017" alt="image" src="https://github.com/user-attachments/assets/37902d3f-80a8-4725-9937-6747bd38c680" />
+<img width="1913" height="1021" alt="image" src="https://github.com/user-attachments/assets/c923cca8-f619-4857-9eac-f6e8bf0a8a86" />
 
-In the [run_automate_pipeline.bat](src/orchestrate/run_automate_pipeline.bat), modify the path of Python execution environment and the path of the [automate_pipeline.py](src/orchestrate/automate_pipeline.py).
+For other tabs, you can modify depend on your needs.
