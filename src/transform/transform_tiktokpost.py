@@ -33,11 +33,7 @@ TODAY = date.today().strftime("%Y-%m-%d")
 
 RAW_DATA_PATH = f"./data_tiktok_video/{PARTITION_DATE}/{TODAY}/raw_data/video"
 HTML_DATA_PATH = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/html"
-<<<<<<< HEAD:jobs/tiktok/transform_tiktokpost.py
-LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data"
-=======
 LOG_DIR = f"./logs/{PARTITION_DATE}/scrape_tiktok_video/transform_data/{TODAY}"
->>>>>>> automate-with-task-scheduler:src/transform/transform_tiktokpost.py
 CONFIG_DATA_PATH= f"./configs/tiktok/{PARTITION_DATE}/{TODAY}/config_tiktokweb.tsv"
 PATH_TRANSFORM_DATA = f"data_tiktok_video/{PARTITION_DATE}/{TODAY}/transform_data"
 
@@ -237,87 +233,6 @@ def transform_all_data(path_data_raw = RAW_DATA_PATH, path_transform_data = PATH
             logger.bind(save=True).error(f"Lỗi xử lý file {file_name}: {e}")
     return all_data
 
-<<<<<<< HEAD:jobs/tiktok/transform_tiktokpost.py
-def main():
-    # transform data
-    print(TODAY)
-    logger.bind(save=True).info("Transforming data ....")
-    full_data = transform_all_data()
-    logger.bind(save=True).success("Transforming completed")
-
-
-    schema = [
-        # --- Metadata / Config ---
-        ("period_web", pl.Utf8),
-        ("share_url", pl.Utf8),
-        ("aweme_id", pl.Utf8),
-        ("job_date", pl.Utf8),
-        ("period", pl.Utf8),
-        ("region", pl.Utf8),
-        ("first_seen_date", pl.Utf8),
-        ("create_time", pl.Utf8),
-        ("rescrape_3d", pl.Int8),
-        ("rescrape_7d", pl.Int8),
-
-        # --- Video Info ---
-        ("createTime_web", pl.Utf8),           # vẫn là str (vì hiện bạn lưu epoch dạng chuỗi)
-        ("desc", pl.Utf8),
-        ("is_ads", pl.Boolean),
-        ("video_cover", pl.Utf8),
-        ("video_originCover", pl.Utf8),
-
-        # --- Author Info ---
-        ("author_id", pl.Utf8),
-        ("author_uniqueId", pl.Utf8),
-        ("author_nickname", pl.Utf8),
-        ("author_followerCount", pl.Utf8),     # hiện vẫn là string trong dữ liệu
-        ("author_followingCount", pl.Utf8),
-
-        # --- Music Info ---
-        ("music_id", pl.Utf8),
-        ("music_title", pl.Utf8),
-        ("music_playUrl", pl.Utf8),
-        ("music_authorName", pl.Utf8),
-
-        # --- Stats Info ---
-        ("stats_diggCount", pl.Utf8),
-        ("stats_shareCount", pl.Utf8),
-        ("stats_commentCount", pl.Utf8),
-        ("stats_playCount", pl.Utf8),
-        ("stats_collectCount", pl.Utf8),
-        ("stats_repostCount", pl.Utf8),
-    ]
-
-    logger.bind(save=True).info("START: UPLOAD TIKTOK WEB DATA")
-    # upload bigquery
-    gbg = GCBigquery()
-    try:
-        df = pl.DataFrame(full_data, schema=schema, strict=False)
-        # ép kiểu sau khi tạo df
-        df = df.with_columns([
-            pl.col("job_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
-            pl.col("first_seen_date").str.strptime(pl.Date, format="%Y-%m-%d", strict=False),
-            pl.col("create_time").str.strptime(pl.Datetime, format="%Y-%m-%dT%H:%M:%S%.f", strict=False),
-        ])
-        df_no_duplicates = df.unique()
-        logger.bind(save=True).debug(f"Products to upload: {len(df_no_duplicates)} (dedup from {len(df)})")
-        # comment đoạn này để test.
-        gbg.upload_dataframe(
-            df=df_no_duplicates,
-            project="newen-455007",
-            destination="tiktok_search_keyword_re_scrape_test.20251020",
-            format="parquet",
-            mode="append",
-            use_legacy=True
-        )
-        logger.bind(save=True).success("Upload BigQuery Success")
-    except Exception as e:
-        logger.bind(save=True).error(f"BigQuery upload failed: {e}")
-        logger.debug(traceback.format_exc())
-
-
-=======
->>>>>>> automate-with-task-scheduler:src/transform/transform_tiktokpost.py
 
 if __name__ == "__main__":
     try:
