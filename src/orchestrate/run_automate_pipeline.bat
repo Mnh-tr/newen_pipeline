@@ -1,3 +1,3 @@
 @echo off
-"D:\nhi_workspace\newen_pipeline\.venv\Scripts\python.exe" "D:\nhi_workspace\newen_pipeline\src\orchestrate\automate_pipeline.py"
+"path\to\python.exe" "path\to\newen_pipeline\src\orchestrate\automate_pipeline.py"
 pause
