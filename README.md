@@ -44,12 +44,6 @@ This project supports installing dependencies from the repository metadata. If y
     uv sync
     ```
 
-3. **Activate the virtual environment**:
-    ```bash
-    # Windows
-    .venv\Scripts\activate
-    ```
-
 ## Configuration setup
 
 ### Proxy and TikTok account setup
@@ -98,10 +92,10 @@ Or, you can set it to run automatically everyday by setting up **Task Scheduler*
 
 - Start to creating a task
 
-- **General** tab: fill in the information and choose `Run whether user is logged on or not`
+- **General tab**: fill in the information and choose `Run whether user is logged on or not`
 
-- **Triggers** tab: create a scheduler
+- **Triggers tab**: create a scheduler
 
-- **Actions** tab: browse to the `run_automate_pipeline.bat` in the project
+- **Actions tab**: browse to the `run_automate_pipeline.bat` in the project
 
-In the [run_automate_pipeline.bat](src/orchestrate/run_automate_pipeline.bat), modify the path of Python execution environment and the path of the [automate_pipeline.py](src/orchestrate/automate_pipeline.py)
+In the [run_automate_pipeline.bat](src/orchestrate/run_automate_pipeline.bat), modify the path of Python execution environment and the path of the [automate_pipeline.py](src/orchestrate/automate_pipeline.py).
