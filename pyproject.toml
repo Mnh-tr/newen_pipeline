@@ -124,4 +124,5 @@ dependencies = [
     "win32-setctime==1.2.0",
     "wsproto==1.2.0",
     "yarl==1.20.1",
+    "nbconvert"
 ]

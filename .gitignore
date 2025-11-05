@@ -5,21 +5,46 @@ build/
 dist/
 wheels/
 *.egg-info
-data_tiktok_video/*
-
-src/test/*
-airflow/logs/*
-*.env
 # Virtual environments
+*.env
 .venv
-*.json
 *.csv
-*.html
 *.txt
 !requirements.txt
-*.log
 *.yaml
 *.tsv
 *.ipynb
 *.png
 *.webp
+
+# configs folder
+configs/cookies/*
+!configs/cookies/tiktok_headers.json
+
+configs/tiktok/*
+!configs/tiktok/2025-10-20/
+!configs/tiktok/2025-10-20/2025-10-21/*
+
+!configs/gcp.yaml
+!configs/link_request_tiktok_photo.txt
+!configs/secrets.yaml
+
+# logs folder
+logs/*
+!logs/
+!logs/2025-10-20/
+!logs/2025-10-20/**
+!logs/log.log
+
+# data_tiktok_video folder
+data_tiktok_video/*
+!data_tiktok_video/html/
+data_tiktok_video/html/*
+!data_tiktok_video/html/video 
+!data_tiktok_video/
+!data_tiktok_video/2025-10-20/
+!data_tiktok_video/2025-10-20/**
+
+# Source folder
+src/test/*
+!src/test/z_code_main.ipynb

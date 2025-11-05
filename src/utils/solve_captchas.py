@@ -45,7 +45,7 @@ def download_blob_image(page, selector, filename="image.png", retries=3):
 
 def detect_and_cut_objects():
     # 1️⃣ Đọc ảnh
-    image_path = r"D:\newen_pipeline\configs\captcha\img_captcha.webp"
+    image_path = r"D:\nhi_workspace\newen_pipeline\configs\captcha\img_captcha.webp"
     img = cv2.imread(image_path)
 
     h, w = img.shape[:2]
@@ -63,7 +63,7 @@ def detect_and_cut_objects():
     # 5️⃣ Tách object bằng connected components
     num_labels, labels = cv2.connectedComponents(mask)
 
-    save_dir = r"D:\newen_pipeline\configs\captcha"
+    save_dir = r"D:\nhi_workspace\newen_pipeline\configs\captcha"
     os.makedirs(save_dir, exist_ok=True)
 
     count = 0
@@ -84,7 +84,7 @@ def detect_and_cut_objects():
 def find_most_similar_objects():
     # 1️⃣ Đọc danh sách ảnh object
     print("Đọc ảnh object đã cắt...")
-    files = glob.glob(r"D:\newen_pipeline\configs\captcha\object_*.png")
+    files = glob.glob(r"D:\nhi_workspace\newen_pipeline\configs\captcha\object_*.png")
     if len(files) < 2:
         print("Không đủ ảnh để so sánh.")
         return None  # Không đủ ảnh để so sánh
@@ -133,7 +133,7 @@ def locate_similar_objects(obj_path1, obj_path2):
         (top_left1, top_left2): tuple chứa tọa độ (x, y) của 2 object trong ảnh gốc.
     """
     # 1️⃣ Đọc và chuẩn hóa ảnh gốc
-    img_orig_resized = cv2.imread(r"D:\newen_pipeline\configs\captcha\img_captcha.webp")
+    img_orig_resized = cv2.imread(r"D:\nhi_workspace\newen_pipeline\configs\captcha\img_captcha.webp")
     if img_orig_resized is None:
         return None, None
     gray_orig = cv2.cvtColor(img_orig_resized, cv2.COLOR_BGR2GRAY)
@@ -170,7 +170,7 @@ def get_similar_objects_positions(page):
         (pos1, pos2): tuple chứa tọa độ (x, y) của 2 object trong ảnh gốc.
     """
     # B1: Tải ảnh captcha từ trang web
-    download_blob_image(page=page, selector="img.cap-rounded-lg", filename=r"D:\newen_pipeline\configs\captcha\img_captcha.webp")
+    download_blob_image(page=page, selector="img.cap-rounded-lg", filename=r"D:\nhi_workspace\newen_pipeline\configs\captcha\img_captcha.webp")
 
 
     # B2: Cắt object từ ảnh
